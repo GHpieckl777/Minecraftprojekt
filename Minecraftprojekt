@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marineford – Team-Dashboard</title>
+
+<!-- Schriften (optional, braucht Internet). Ohne Internet greifen die System-Schriften als Fallback. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+/* =====================================================
+   FARBEN & SCHRIFTEN – hier kannst du alles anpassen
+   ===================================================== */
+:root {
+  --bg:        #0d0f12;   /* Seitenhintergrund */
+  --surface:   #151a1f;   /* Karten */
+  --surface-2: #1c232a;   /* Eingabefelder, Zeilen */
+  --line:      #27303a;   /* Rahmen */
+  --text:      #e7eef5;   /* Haupttext */
+  --muted:     #8a98a6;   /* Nebentext */
+  --accent:    #2bff9a;   /* Smaragdgrün (Hauptakzent) */
+  --accent-2:  #25d6f5;   /* Cyan (zweiter Akzent) */
+  --danger:    #ff5d73;   /* Löschen / Fehler */
+  --radius:    14px;
+  --font-ui:   "Chakra Petch", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+body {
+  background: var(--bg);
+  /* dezentes Blockraster im Hintergrund, wie Minecraft-Chunks */
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: var(--font-ui);
+  line-height: 1.5;
+}
+body::before { /* dunkelt das Raster zum Rand hin ab */
+  content: ""; position: fixed; inset: 0; z-index: -1;
+  background: radial-gradient(ellipse at 50% 0%, rgba(13,15,18,.55), var(--bg) 85%);
+}
+
+/* ---------- Navigation ---------- */
+nav {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px clamp(14px, 4vw, 32px);
+  background: rgba(13,15,18,.88); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+}
+nav .logo { font-weight: 700; font-size: 1.15rem; color: var(--accent); margin-right: auto; white-space: nowrap; }
+nav a {
+  color: var(--muted); text-decoration: none; padding: 6px 12px;
+  border-radius: 8px; white-space: nowrap; transition: color .15s, background .15s;
+}
+nav a:hover { color: var(--text); background: var(--surface-2); }
+
+/* ---------- Layout ---------- */
+main { max-width: 1180px; margin: 0 auto; padding: 24px clamp(14px, 4vw, 32px) 60px; display: grid; gap: 20px; }
+.grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+.card h2 { font-size: 1.15rem; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.card h2 small { color: var(--muted); font-weight: 400; font-size: .85rem; margin-left: auto; }
+
+/* ---------- Buttons & Eingaben ---------- */
+button, input, select { font: inherit; color: inherit; }
+button {
+  cursor: pointer; border: 1px solid var(--line); background: var(--surface-2);
+  padding: 8px 14px; border-radius: 9px; transition: border-color .15s, transform .08s, background .15s;
+}
+button:hover { border-color: var(--accent); }
+button:active { transform: translateY(1px); }
+button.primary { background: var(--accent); color: #04140c; border-color: var(--accent); font-weight: 700; }
+button.primary:hover { background: #5dffb4; }
+button.cyan { border-color: var(--accent-2); color: var(--accent-2); }
+button.danger:hover { border-color: var(--danger); color: var(--danger); }
+button.icon { padding: 4px 9px; }
+input, select {
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: 9px;
+  padding: 8px 12px; min-width: 0;
+}
+input:focus-visible, select:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 1px; }
+button:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; }
+.row > input { flex: 1 1 120px; }
+.empty { color: var(--muted); padding: 14px 0; }
+
+/* ---------- Hero: Projektfortschritt als XP-Leiste ---------- */
+.hero { border-color: rgba(43,255,154,.35); box-shadow: 0 0 40px -18px var(--accent); }
+.hero .kicker { color: var(--muted); }
+.hero h1 { font-size: clamp(1.8rem, 5vw, 3rem); line-height: 1.1; margin: 4px 0 6px; }
+.hero p { color: var(--muted); max-width: 60ch; }
+.xp { display: grid; grid-template-columns: repeat(20, 1fr); gap: 3px; margin: 22px 0 12px; }
+.xp i { height: 22px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 2px; transition: background .3s, box-shadow .3s; }
+.xp i.on { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 10px -2px var(--accent); }
+.xp i.on:nth-child(n+14) { background: var(--accent-2); border-color: var(--accent-2); box-shadow: 0 0 10px -2px var(--accent-2); }
+.hero-foot { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.percent { font-family: var(--font-mono); font-size: 1.6rem; font-weight: 600; color: var(--accent); margin-right: auto; }
+
+/* ---------- Aufgaben ---------- */
+.list { list-style: none; padding: 0; display: grid; gap: 8px; margin-top: 14px; }
+.task { display: flex; align-items: center; gap: 12px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.task input[type=checkbox] { accent-color: var(--accent); width: 20px; height: 20px; flex: none; }
+.task span { flex: 1; word-break: break-word; }
+.task.done span { color: var(--muted); text-decoration: line-through; }
+
+/* ---------- Koordinaten ---------- */
+.coord { display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; align-items: center; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.coord b { display: block; }
+.coord .xyz { font-family: var(--font-mono); font-size: .9rem; color: var(--accent-2); }
+.coord .dim { color }
